@@ -1,5 +1,10 @@
 import sys
+import json
 
-data = sys.argv[1]
+data = json.loads(sys.argv[1])
 
+a = float(data["a"])
+b = float(data["b"])
+
+print(a + b)
 
