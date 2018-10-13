@@ -2,7 +2,7 @@ from flask import Flask
 from flask import request
 import json
 import os
-# python -m pip install flask-cors
+# sudo python -m pip install flask-cors
 from flask_cors import CORS
 
 app = Flask(__name__)
