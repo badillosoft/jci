@@ -13,10 +13,10 @@ CORS(app)
 def job(name):
 	data = ""
 	try:
-		data = json.dumps(request.form)
+		data = request.args.to_dict()
 	except:
 		pass
-	cmd = "python jobs/{}.py {}".format(name, data)
+	cmd = "python jobs/{}.py '{}'".format(name, json.dumps(data))
 	stream = os.popen(cmd)
 	return stream.read()
 
