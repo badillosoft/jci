@@ -132,13 +132,13 @@
             clear($panel);
             $panel.innerHTML = `
                 <p>Job: <span>${config.panel}</span></p>
-                <p><a href="/hello">${config.url}/${config.panel}</a></p>
+                <p><a href="/${config.panel}">${config.url}/${config.panel}</a></p>
                 <div class="row">
                     <a class="url" href="/${config.panel}">${config.url}/${config.panel}</a>
-                    <button>Enviar</button>
+                    <button onclick="send()">Enviar</button>
                 </div>
-                <p><button onclick="addParam()">Agregar Parámetro</button></p>
                 <div class="result"></div>
+                <p><button onclick="addParam()">Agregar Parámetro</button></p>
                 <div class="params"></div>
             `;
             setTimeout(() => {
@@ -208,12 +208,19 @@
             $url.href = url;
             $url.innerHTML = `${config.url}/${url}`;
             localStorage.setItem("config", JSON.stringify(config));
+            config.url = url;
         }
 
         function selectPanel(name) {
             console.log("select panel", name);
             config.panel = name;
             createPanel();
+        }
+
+        async function send() {
+            const $result = document.querySelector(".result");
+            const response = await fetch(config.url);
+            $result.innerHTML = await response.text();
         }
         
         const config = JSON.parse(localStorage.getItem("config") || "{}");
