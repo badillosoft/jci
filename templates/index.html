@@ -214,10 +214,13 @@
             createPanel();
         }
 
-        async function send() {
+        function send() {
             const $result = document.querySelector(".result");
-            const response = await fetch(config.url_send);
-            $result.innerHTML = await response.text();
+            const response = fetch(config.url_send).then(response => {
+                response.text().then(result => {
+                    $result.innerHTML = result;
+                });
+            });
         }
         
         const config = JSON.parse(localStorage.getItem("config") || "{}");
