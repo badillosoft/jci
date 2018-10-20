@@ -195,6 +195,8 @@
         }
 
         function updateParams() {
+            config[config.panel] = config[config.panel] || {};
+            config[config.panel].params = config[config.panel].params || {};
             const $url = document.querySelector(".url");
             const params = [];
             for (let id in config[config.panel].params) {
@@ -216,6 +218,7 @@
 
         function send() {
             const $result = document.querySelector(".result");
+            updateParams();
             const response = fetch(config.url_send).then(response => {
                 response.text().then(result => {
                     $result.innerHTML = result;
