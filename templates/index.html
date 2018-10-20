@@ -208,7 +208,7 @@
             $url.href = url;
             $url.innerHTML = `${config.url}/${url}`;
             localStorage.setItem("config", JSON.stringify(config));
-            config.url = url;
+            config.url_send = url;
         }
 
         function selectPanel(name) {
@@ -219,7 +219,7 @@
 
         async function send() {
             const $result = document.querySelector(".result");
-            const response = await fetch(config.url);
+            const response = await fetch(config.url_send);
             $result.innerHTML = await response.text();
         }
         
