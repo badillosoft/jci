@@ -11,7 +11,7 @@ mode = data["mode"]
 # Paso 3 - Encendemos el led con el pin y dependiendo el modo encendemos o apagamos
 
 # Ajustamos a BCM la numeracion de los pines
-GPIO.set_mode(GPIO.BCM)
+GPIO.setmode(GPIO.BCM)
 # Indicamos que el pin es de salida
 GPIO.setup(pin, GPIO.OUT)
 
