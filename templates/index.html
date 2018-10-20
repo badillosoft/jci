@@ -107,12 +107,9 @@
         <div class="content">
             <div class="jobs">
                 <ul>
-                    <li onclick="selectPanel('hello')">hello</li>
-                    <li onclick="selectPanel('test')">test</li>
-                    <li onclick="selectPanel('testJSON')">testJSON</li>
-                    <li onclick="selectPanel('getDate')">getDate</li>
-                    <li onclick="selectPanel('sum')">sum</li>
-                    <li onclick="selectPanel('led')">led</li>
+                    {% for file in files %}
+                    <li onclick="selectPanel('{{ file }}')">{{ file }}</li>
+                    {% endfor %}
                 </ul>
             </div>
             <div class="panel">
