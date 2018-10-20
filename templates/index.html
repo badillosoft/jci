@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>JCI - Job Command Interface</title>
+    <style>
+        * {
+            margin: 0px;
+            padding: 0px;
+            box-sizing: border-box;
+        }
+        .app {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            background: #dddddd;
+        }
+        .header {
+            width: 100%;
+            height: 100px;
+            background-color: cornflowerblue;
+        }
+        .content {
+            display: flex;
+            width: 100%;
+            height: calc(100% - 100px);
+            background-color: white;
+        }
+
+        .jobs {
+            width: 20%;
+            height: 100%;
+            background-color: slategray;
+            color: white;
+            padding: 20px;
+        }
+        .jobs ul {
+            margin: 0px;
+            padding: 0px;
+            list-style: none;
+            font-size: 2em;
+        }
+        .jobs ul li {
+            margin: 0px;
+            padding: 10px;
+        }
+        .jobs ul li:hover {
+            background-color: cornflowerblue;
+            cursor: pointer;
+        }
+        .panel {
+            display: flex;
+            flex-flow: column;
+            width: 80%;
+            font-size: 2em;
+            background-color: white;
+            padding: 20px;
+            overflow: auto;
+        }
+        .panel .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .panel p {
+            margin: 10px 0px;
+        }
+        .panel p span {
+            color: tomato;
+        }
+        .panel button {
+            font-size: 1em;
+            margin: 10px 0px;
+            padding: 10px;
+        }
+        .param {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            background-color: cornflowerblue;
+            padding: 10px;
+        }
+        .param input {
+            flex-grow: 1;
+            margin: 0px 10px;
+            font-size: 1em;
+            padding: 0px 10px;
+        }
+        a {
+            text-decoration: none;
+            color: cornflowerblue;
+            cursor: pointer;
+        }
+        a:hover {
+            color: turquoise;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div class="header"></div>
+        <div class="content">
+            <div class="jobs">
+                <ul>
+                    <li onclick="selectPanel('hello')">hello</li>
+                    <li onclick="selectPanel('test')">test</li>
+                    <li onclick="selectPanel('testJSON')">testJSON</li>
+                    <li onclick="selectPanel('getDate')">getDate</li>
+                    <li onclick="selectPanel('sum')">sum</li>
+                    <li onclick="selectPanel('led')">led</li>
+                </ul>
+            </div>
+            <div class="panel">
+                <h1>Bienvenido a JCI</h1>
+                <p>Selecciona un Job para comenzar</p>
+            </div>
+        </div>
+    </div>
+    <script>
+        function clear(el) {
+            while(el.firstChild) {
+                el.removeChild(el.firstChild);
+            }
+        }
+        function createPanel() {
+            const $panel = document.querySelector(".panel");
+            clear($panel);
+            $panel.innerHTML = `
+                <p>Job: <span>${config.panel}</span></p>
+                <p><a href="/hello">${config.url}/${config.panel}</a></p>
+                <div class="row">
+                    <a class="url" href="/${config.panel}">${config.url}/${config.panel}</a>
+                    <button>Enviar</button>
+                </div>
+                <p><button onclick="addParam()">Agregar Parámetro</button></p>
+                <div class="result"></div>
+                <div class="params"></div>
+            `;
+            setTimeout(() => {
+                if (!config[config.panel]) {
+                    return;
+                }
+                for (let id in config[config.panel].params) {
+                    createParam(id);
+                }
+                updateParams();
+            }, 100);
+        }
+
+        function createParam(id) {
+            config[config.panel] = config[config.panel] || {};
+            config[config.panel].params = config[config.panel].params || {};
+            config[config.panel].params[id] = config[config.panel].params[id] || {};
+
+            const $params = document.querySelector(".params");
+            const $div = document.createElement("div");
+            $div.className = "param";
+            const $label1 = document.createElement("label");
+            $label1.htmlFor=`key-${id}`;
+            $label1.innerText = "Clave:";
+            const $input1 = document.createElement("input");
+            $input1.id = `key-${id}`;
+            $input1.placeholder = "Calve";
+            $input1.value = config[config.panel].params[id].key || "";
+            const $label2 = document.createElement("label");
+            $label2.htmlFor=`value-${id}`;
+            $label2.innerText = "Valor:";
+            const $input2 = document.createElement("input");
+            $input2.id = `value-${id}`;
+            $input2.placeholder = "Valor";
+            $input2.value = config[config.panel].params[id].value || "";
+            $div.appendChild($label1);
+            $div.appendChild($input1);
+            $div.appendChild($label2);
+            $div.appendChild($input2);
+            $params.appendChild($div);
+
+            $input1.onchange = function() {
+                config[config.panel].params[id] = config[config.panel].params[id] || {};
+                config[config.panel].params[id].key = $input1.value;
+                updateParams();
+            };
+            $input2.onchange = function() {
+                config[config.panel].params[id] = config[config.panel].params[id] || {};
+                config[config.panel].params[id].value = $input2.value;
+                updateParams();
+            };
+        }
+
+        function addParam() {
+            const id = Math.random().toString(16).slice(2);
+            createParam(id);
+        }
+
+        function updateParams() {
+            const $url = document.querySelector(".url");
+            const params = [];
+            for (let id in config[config.panel].params) {
+                let {key, value} = config[config.panel].params[id];
+                params.push(`${key}=${value}`);
+            }
+            const url = `${config.panel}?${params.join("&")}`;
+            $url.href = url;
+            $url.innerHTML = `${config.url}/${url}`;
+            localStorage.setItem("config", JSON.stringify(config));
+        }
+
+        function selectPanel(name) {
+            console.log("select panel", name);
+            config.panel = name;
+            createPanel();
+        }
+        
+        const config = JSON.parse(localStorage.getItem("config") || "{}");
+
+        config.url = `${window.location}`.replace(/\/$/, "");
+        config.params = [];
+    </script>
+</body>
+</html>
