@@ -24,11 +24,14 @@ def job(name):
     data = ""
     try:
         data = request.args.to_dict()
+        cmd = "python jobs/{}.py '{}'".format(name, json.dumps(data))
+        stream = os.popen(cmd)
+        result = stream.read()
+        if result == "":
+            return "Empty output. Possible error on job {}".format(name)
+        return result
     except:
-        pass
-    cmd = "python jobs/{}.py '{}'".format(name, json.dumps(data))
-    stream = os.popen(cmd)
-    return stream.read()
+        return "Error on job {}".format(name)
 
 
 app.run(port=80)
